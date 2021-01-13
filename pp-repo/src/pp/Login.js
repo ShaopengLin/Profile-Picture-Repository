@@ -1,10 +1,32 @@
 import React from "react";
+import {useState} from 'react'
 import ReactDOM from "react-dom";
 import { Button, Input, InputLabel, InputAdornment } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
-
+import User from './User';
+import CurrentUser from './CurrentUser';
+import fire from "../fire";
+import { useHistory } from "react-router-dom";
 function Login() {
+  const [user, setUser] = useState(new User());
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const history = useHistory();
+  const clearInputs = () => {
+    setEmail("");
+    setPassword("");
+  };
+
+  const handleSignup = () => {
+    clearInputs();
+    fire
+      .auth()
+      .createUserWithEmailAndPassword(email, password)
+      .catch((err) => {
+        console.log("fuck");
+      });
+  };
   return (
     <div
       className="login"
@@ -26,6 +48,14 @@ function Login() {
             <AccountCircle />
           </InputAdornment>
         }
+        type="text"
+          autofocus
+          required
+          value={email}
+          onChange={(e) => {
+            user.email = e.target.value;
+            setEmail(e.target.value);
+          }}
         style={{ marginBottom: "20px" }}
       />
 
@@ -38,6 +68,13 @@ function Login() {
             <VpnKeyIcon />
           </InputAdornment>
         }
+        type="password"
+          required
+          value={password}
+          onChange={(e) => {
+            user.password = e.target.value;
+            setPassword(e.target.value);
+          }}
         style={{ marginBottom: "20px" }}
       />
 
@@ -54,6 +91,11 @@ function Login() {
           minHeight: "70px",
           marginBottom: "20px"
         }}
+        onClick={()=>{CurrentUser.handleLogIn(email, password).then(()=>{
+          history.push("/interface");
+        }).catch(err => {
+          console.log(err.message);
+        })}}
       >
         Login
       </Button>
@@ -70,6 +112,13 @@ function Login() {
           minWidth: "200px",
           minHeight: "70px",
 
+        }}
+        onClick={()=>{
+
+          user.handleSignUp().catch(err => {
+            console.log(err.message);
+          })
+        
         }}
       >
         {" "}
