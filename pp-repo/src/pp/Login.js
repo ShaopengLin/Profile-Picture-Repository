@@ -1,32 +1,19 @@
 import React from "react";
 import {useState} from 'react'
-import ReactDOM from "react-dom";
 import { Button, Input, InputLabel, InputAdornment } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import User from './User';
 import CurrentUser from './CurrentUser';
-import fire from "../fire";
 import { useHistory } from "react-router-dom";
 function Login() {
   const [user, setUser] = useState(new User());
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const history = useHistory();
-  const clearInputs = () => {
-    setEmail("");
-    setPassword("");
-  };
 
-  const handleSignup = () => {
-    clearInputs();
-    fire
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .catch((err) => {
-        console.log("fuck");
-      });
-  };
+
+
   return (
     <div
       className="login"
@@ -115,7 +102,11 @@ function Login() {
         }}
         onClick={()=>{
 
-          user.handleSignUp().catch(err => {
+          user.handleSignUp().then(()=>{CurrentUser.handleLogIn(email, password).then(()=>{
+            history.push("/interface");
+          }).catch(err => {
+            console.log(err.message);
+          })}). catch(err => {
             console.log(err.message);
           })
         

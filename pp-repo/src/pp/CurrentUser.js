@@ -1,5 +1,5 @@
 import fire from "../fire";
-import React, { useState } from "react";
+
 const CurrentUser = {
   /**
    * Checks if a user is logged into firebase

@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -14,11 +14,9 @@ import GridListTile from "@material-ui/core/GridListTile";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import Fab from "@material-ui/core/Fab";
 import GridListTileBar from "@material-ui/core/GridListTileBar";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import CurrentUser from "./CurrentUser";
 import { useHistory } from "react-router-dom";
+import GridMenu from './Menu';
 const useStyles = makeStyles((theme) => ({
   menu: {
     "& svg": {
@@ -77,96 +75,81 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Interface() {
-
-
   const history = useHistory();
   const [image, setImage] = useState();
-  const [tempUrl, setTempUrl] = useState("");
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [profileUrl, setProfileUrl] = useState('');
-  const [imageLinks, setImageLinks] = useState(['']);
-  const handleSetLinks= () =>{
+  const [profileUrl, setProfileUrl] = useState("");
+  const [imageLinks, setImageLinks] = useState([]);
+
+  const handleSetLinks = () => {
     CurrentUser.getImageLink().then((links) => {
+
       setImageLinks(links);
     });
-    CurrentUser.getProfileLink().then((link)=>{setProfileUrl(link)});
-  }
-  
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleSignOut = () => {
-    fire.auth().signOut().then(()=>{
-      history.push("/");
+    CurrentUser.getProfileLink().then((link) => {
+      setProfileUrl(link);
     });
   };
-  const handleCloseUpload =()=>{
-    setAnchorEl(null);
-    if (image != null){
-    const uploadT = fire
-      .storage()
-      .ref("image/1")
-      .put(image);
-    }
+  const handleSetProfile = (url) => {
+
+    setProfileUrl(url);
+    CurrentUser.setProfileLink(url);
+
+    
+
   }
-  const handleClose = () => {
-    setAnchorEl(null);
+
+  const handleSignOut = () => {
+    fire
+      .auth()
+      .signOut()
+      .then(() => {
+        history.push("/");
+      });
   };
   const indent = [];
-  const tileData = [];
- /* tileData.push("https://picsum.photos/id/237/200/300");
-  tileData.push("https://picsum.photos/seed/picsum/200/300");
-  tileData.push("https://picsum.photos/id/237/200/300");
-  tileData.push("https://picsum.photos/id/237/200/300");
-  tileData.push("https://picsum.photos/id/237/200/300");
-  tileData.push("https://picsum.photos/id/237/200/300");
-  tileData.push("https://picsum.photos/id/237/200/300");
-  tileData.push("https://picsum.photos/id/237/200/300");
-  tileData.push("https://picsum.photos/id/237/200/300");
-  tileData.push("https://picsum.photos/id/237/200/300");*/
+
   let pr = useStyles().paper;
   for (let i = 1; i < 7; i++) {
     indent.push(<Card className={pr} elevation={5} />);
   }
 
   const handleChange = (e) => {
-    if (e.target.files[0]) {
-      setImage(e.target.files[0]);
-    }
-    
-  };
-  const handleUpload = () => {
-    if (image != null){
+    if (e.target.files[0] != null) {
       const uploadT = fire
         .storage()
-        .ref(fire.auth().currentUser.uid +"/"+ image.name)
-        .put(image);
-        uploadT.on(
-          "state_changed",
-          snapshot=>{},
-          error=>{
-
-          },
-          ()=>{
-          fire.storage().ref(fire.auth().currentUser.uid +'/'+ image.name).getDownloadURL().then((u)=>{
+        .ref(fire.auth().currentUser.uid + "/" + e.target.files[0].name)
+        .put(e.target.files[0]);
+      uploadT.on(
+        "state_changed",
+        (snapshot) => {},
+        (error) => {},
+        () => {
+          uploadT.snapshot.ref.getDownloadURL().then((u) => {
             var arrayU = [];
-            arrayU.push(u);
-            setImageLinks(imageLinks.concat(arrayU));
-          arrayU = imageLinks;
-          CurrentUser.setImageLink(arrayU);
-          })
-          
-        })
-          
-      
-    }
-  };
-  useEffect(() => {
-    if (fire.auth().currentUser && fire.firestore().collection('UserData').doc(fire.auth().uid)){
-    handleSetLinks();
+            arrayU.push({
+              url: u,
+              index: imageLinks.length,
+            });
+            arrayU = imageLinks.concat(arrayU);
+            setImageLinks(arrayU);
+
+            CurrentUser.setImageLink(arrayU);
+            setImage(null);
+          });
+        }
+      );
     }
 
-  }, [])
+  };
+
+  useEffect(() => {
+    if (
+      fire.auth().currentUser &&
+      fire.firestore().collection("UserData").doc(fire.auth().uid)
+    ) {
+      handleSetLinks();
+    }
+  }, []);
   return (
     <div className={useStyles().menu}>
       <AppBar position="static">
@@ -182,74 +165,52 @@ function Interface() {
           <Typography variant="h6" style={{ flexGrow: 1, fontSize: "30px" }}>
             Profile Pictures Repository
           </Typography>
-          <Button color="inherit" style={{ fontSize: "30px" }} onClick = {handleSignOut}>
+          <Button
+            color="inherit"
+            style={{ fontSize: "30px" }}
+            onClick={handleSignOut}
+          >
             Sign Out
           </Button>
         </Toolbar>
       </AppBar>
 
       <div className={useStyles().nameCardPos}>
-        <Card className={useStyles().nameCard} elevation = {6}>
+        <Card className={useStyles().nameCard} elevation={6}>
           <Avatar
             className={useStyles().avatar}
             alt="Remy Sharp"
-            src= {profileUrl}
-            />
+            src={profileUrl}
+          />
         </Card>
       </div>
 
       <div className={useStyles().ImgList}>
-        <Fab color="primary" className={useStyles().addPhoto}  component="label" onClick = {handleUpload}>
-        <input
-                          onChange={handleChange}
-                          type="file"
-                          accept="image/*"
-                          id="cameraInput"
-                          hidden
-                          
-                        />
+        <Fab color="primary" className={useStyles().addPhoto} component="label">
+          <input
+            onChange={handleChange}
+            type="file"
+            accept="image/*"
+            id="cameraInput"
+            hidden
+          />
           <AddAPhotoIcon />
-          
         </Fab>
 
-        <GridList cellHeight={130} className={useStyles().gridList} cols={3}>
-          {tileData.map((tile) => (
-            <GridListTile cols={tile.cols || 1}>
-              <img src={tile} />
-              <GridListTileBar
-                style={{ marginBottom: "80px" }}
+        <GridList cellHeight={130} className={useStyles().gridList} cols={3} >
+          {imageLinks.map((tile) => (
+            <GridListTile cols={tile.cols || 1} key={tile.url} id = {tile.url} >
+              <img src={tile.url} alt = "ok"/>
+              <GridListTileBar  
+                style={{ marginBottom: "83px" }}
                 actionIcon={
-                  <IconButton>
-                    <Menu
-                      id="simple-menu"
-                      anchorEl={anchorEl}
-                      keepMounted
-                      open={Boolean(anchorEl)}
-                      onClose={handleClose}
-                    >
-                      <MenuItem onClick={handleClose}>Set as Profile</MenuItem>
-                      <MenuItem
-                        aria-label="More"
-                        aria-owns="long-menu"
-                        aria-haspopup="true"
-                        onClick={handleCloseUpload}
-                        variant="contained"
-  component="label"
-                      >
-                        
-                        Upload New
-                        <input
-                          onChange={handleChange}
-                          type="file"
-                          accept="image/*"
-                          id="cameraInput"
-                          hidden
-                        />
-                      </MenuItem>
-                      <MenuItem onClick={handleClose}>Remove</MenuItem>
-                      
-                    </Menu>
-                    <MoreHorizIcon color="primary" onClick={handleClick} />
+                  <IconButton >
+                    
+
+                    <GridMenu url = {tile.url} handleChange = {handleChange} handleSetProfile = {handleSetProfile}/>
+
+
+                    
                   </IconButton>
                 }
               />
@@ -276,3 +237,33 @@ export default Interface;
             title="Paella dish"
           />
         </Card>*/
+
+
+      /*  <Menu key = {tile.url + '1'}
+                      anchorEl={anchorEl}
+                      keepMounted
+                      open={Boolean(anchorEl)}
+                      onClose={handleClose}>
+                      
+                      <SetP imageU = {tile.url}/>
+                      
+                      
+                      <MenuItem
+                        aria-label="More"
+                        aria-owns="long-menu"
+                        aria-haspopup="true"
+                        onClick={handleClose}
+                        variant="contained"
+                        component="label"
+                      >
+                        Upload New
+                        <input
+                          onChange={handleChange}
+                          type="file"
+                          accept="image/*"
+                          id="cameraInput"
+                          hidden
+                        />
+                      </MenuItem>
+                      <MenuItem onClick={handleClose}>Remove</MenuItem>
+                    </Menu>*/

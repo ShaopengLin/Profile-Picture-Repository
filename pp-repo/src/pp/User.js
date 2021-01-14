@@ -5,7 +5,7 @@ class User {
   #userProps = {
     emailValue: "default@gmail.com",
     password: "",
-    imageLink: ['https://firebasestorage.googleapis.com/v0/b/profilepicrepo.appspot.com/o/default-user-icon-4.jpg?alt=media&token=a1a0114e-08a4-4771-8448-fc4440e418f5'],
+    imageLink: [],
     profileLink: 'https://firebasestorage.googleapis.com/v0/b/profilepicrepo.appspot.com/o/default-user-icon-4.jpg?alt=media&token=a1a0114e-08a4-4771-8448-fc4440e418f5',
   }
   /**
