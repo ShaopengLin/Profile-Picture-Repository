@@ -1,8 +1,8 @@
 import React from "react";
 
-import Interface from "./pp/Interface";
+import Interface from "./config/Interface";
 
-import Login from "./pp/Login";
+import Login from "./config/Login";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
 

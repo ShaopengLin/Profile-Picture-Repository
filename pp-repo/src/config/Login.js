@@ -1,10 +1,10 @@
 import React from "react";
-import {useState} from 'react'
+import { useState } from "react";
 import { Button, Input, InputLabel, InputAdornment } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
-import VpnKeyIcon from '@material-ui/icons/VpnKey';
-import User from './User';
-import CurrentUser from './CurrentUser';
+import VpnKeyIcon from "@material-ui/icons/VpnKey";
+import User from "./User";
+import CurrentUser from "./CurrentUser";
 import { useHistory } from "react-router-dom";
 function Login() {
   const [user, setUser] = useState(new User());
@@ -12,11 +12,8 @@ function Login() {
   const [password, setPassword] = useState("");
   const history = useHistory();
 
-
-
   return (
     <div
-      className="login"
       style={{
         height: "700px",
         width: "200px",
@@ -36,13 +33,13 @@ function Login() {
           </InputAdornment>
         }
         type="text"
-          autofocus
-          required
-          value={email}
-          onChange={(e) => {
-            user.email = e.target.value;
-            setEmail(e.target.value);
-          }}
+        autofocus
+        required
+        value={email}
+        onChange={(e) => {
+          user.email = e.target.value;
+          setEmail(e.target.value);
+        }}
         style={{ marginBottom: "20px" }}
       />
 
@@ -56,12 +53,12 @@ function Login() {
           </InputAdornment>
         }
         type="password"
-          required
-          value={password}
-          onChange={(e) => {
-            user.password = e.target.value;
-            setPassword(e.target.value);
-          }}
+        required
+        value={password}
+        onChange={(e) => {
+          user.password = e.target.value;
+          setPassword(e.target.value);
+        }}
         style={{ marginBottom: "20px" }}
       />
 
@@ -71,18 +68,23 @@ function Login() {
         color="primary"
         size="large"
         style={{
+          size: "large",
           fontSize: "2em",
           maxWidth: "200px",
           maxHeight: "70px",
           minWidth: "200px",
           minHeight: "70px",
-          marginBottom: "20px"
+          marginBottom: "20px",
         }}
-        onClick={()=>{CurrentUser.handleLogIn(email, password).then(()=>{
-          history.push("/interface");
-        }).catch(err => {
-          console.log(err.message);
-        })}}
+        onClick={() => {
+          CurrentUser.handleLogIn(email, password)
+            .then(() => {
+              history.push("/interface");
+            })
+            .catch((err) => {
+              console.log(err.message);
+            });
+        }}
       >
         Login
       </Button>
@@ -98,24 +100,27 @@ function Login() {
           maxHeight: "70px",
           minWidth: "200px",
           minHeight: "70px",
-
         }}
-        onClick={()=>{
-
-          user.handleSignUp().then(()=>{CurrentUser.handleLogIn(email, password).then(()=>{
-            history.push("/interface");
-          }).catch(err => {
-            console.log(err.message);
-          })}). catch(err => {
-            console.log(err.message);
-          })
-        
+        onClick={() => {
+          user
+            .handleSignUp()
+            .then(() => {
+              CurrentUser.handleLogIn(email, password)
+                .then(() => {
+                  history.push("/interface");
+                })
+                .catch((err) => {
+                  console.log(err.message);
+                });
+            })
+            .catch((err) => {
+              console.log(err.message);
+            });
         }}
       >
         {" "}
         Sign Up{" "}
       </Button>
-
     </div>
   );
 }

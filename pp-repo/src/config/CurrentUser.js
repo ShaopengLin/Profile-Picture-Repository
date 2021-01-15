@@ -38,7 +38,8 @@ const CurrentUser = {
       .get()
       .then((doc) => {
         if (doc.data() !== undefined) return doc.data().emailValue;
-      }).catch((err) => {
+      })
+      .catch((err) => {
         return new Promise((resolve, reject) => {
           throw new Error(err.message);
         });
@@ -84,7 +85,8 @@ const CurrentUser = {
       .get()
       .then((doc) => {
         if (doc.data() !== undefined) return doc.data().profileLink;
-      }).catch((err) => {
+      })
+      .catch((err) => {
         return new Promise((resolve, reject) => {
           throw new Error(err.message);
         });
@@ -119,11 +121,9 @@ const CurrentUser = {
       .collection("UserData")
       .doc(fire.auth().currentUser.uid)
       .get()
-      .then(queryResult =>{
-
+      .then((queryResult) => {
         return queryResult.data().imageLink;
-
-    })
+      });
   },
   setImageLink: (value) => {
     let document = fire
@@ -143,7 +143,6 @@ const CurrentUser = {
         transaction.update(document, { imageLink: value });
       });
     });
-  }
-}
+  },
+};
 export default CurrentUser;
- 
